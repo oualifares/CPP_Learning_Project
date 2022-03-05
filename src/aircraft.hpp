@@ -20,6 +20,13 @@ private:
     Tower& control;
     bool landing_gear_deployed = false; // is the landing gear deployed?
     bool is_at_terminal        = false;
+    unsigned int fuel;
+
+    // TASK-0 C-3
+    // L'endroit le plus approprié pour retirer l'avion, c'est lorsque :
+    // 1. l'attérissage a déjà eu lieu => on ajoute un attribut
+    // 2. l'avion a terminé sa course de décollage => waypoints.empty()
+    bool is_service_done = false;
 
     // turn the aircraft to arrive at the next waypoint
     // try to facilitate reaching the waypoint after the next by facing the
@@ -37,7 +44,7 @@ private:
     void arrive_at_terminal();
     // deploy and retract landing gear depending on next waypoints
     void operate_landing_gear();
-    void add_waypoint(const Waypoint& wp, const bool front);
+
     bool is_on_ground() const { return pos.z() < DISTANCE_THRESHOLD; }
     float max_speed() const { return is_on_ground() ? type.max_ground_speed : type.max_air_speed; }
 
@@ -55,13 +62,51 @@ public:
         control { control_ }
     {
         speed.cap_length(max_speed());
+        fuel = (rand() % (MAX_FUEL + 1 - MIN_FUEL)) + 150;
     }
+
+    int getFuel() const { return fuel; }
 
     const std::string& get_flight_num() const { return flight_number; }
     float distance_to(const Point3D& p) const { return pos.distance_to(p); }
 
     void display() const override;
-    void move() override;
+    bool update() override;
+    bool has_terminal() const;
+    bool is_circling() const;
+    void releaseTerminal() { control.releaseTermianlIfReserved(this); }
+    bool is_low_on_fuel() const;
+
+    template <bool front> void add_waypoint(const Waypoint& wp)
+    {
+        if constexpr (front)
+        {
+            waypoints.push_front(wp);
+        }
+        else
+        {
+            waypoints.push_back(wp);
+        }
+    }
+
+    bool refill(int& fuel_stock)
+    {
+        int reserve = MAX_FUEL - fuel;
+        if (reserve > fuel_stock)
+        {
+            fuel += fuel_stock;
+            reserve    = fuel_stock;
+            fuel_stock = 0;
+        }
+        else
+        {
+            fuel += reserve;
+            fuel_stock -= reserve;
+        }
+        std::cout << flight_number << " replenishment with :" << reserve << " fuels" << std::endl;
+        return fuel == MAX_FUEL;
+    }
 
     friend class Tower;
+    friend class AircraftManager;
 };

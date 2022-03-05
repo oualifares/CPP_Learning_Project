@@ -9,8 +9,8 @@
 class Terminal : public GL::DynamicObject
 {
 private:
-    unsigned int service_progress    = SERVICE_CYCLES;
-    const Aircraft* current_aircraft = nullptr;
+    unsigned int service_progress = SERVICE_CYCLES;
+    Aircraft* current_aircraft    = nullptr;
     const Point3D pos;
 
     Terminal(const Terminal&) = delete;
@@ -21,7 +21,7 @@ public:
 
     bool in_use() const { return current_aircraft != nullptr; }
     bool is_servicing() const { return service_progress < SERVICE_CYCLES; }
-    void assign_craft(const Aircraft& aircraft) { current_aircraft = &aircraft; }
+    void assign_craft(Aircraft& aircraft) { current_aircraft = &aircraft; }
 
     void start_service(const Aircraft& aircraft)
     {
@@ -32,18 +32,29 @@ public:
 
     void finish_service()
     {
+        assert(current_aircraft);
         if (!is_servicing())
         {
             std::cout << "done servicing " << current_aircraft->get_flight_num() << '\n';
             current_aircraft = nullptr;
         }
     }
+    void releaseTerminal() { current_aircraft = nullptr; }
 
-    void move() override
+    bool update() override
     {
-        if (in_use() && is_servicing())
+        if (in_use() && is_servicing() && !current_aircraft->is_low_on_fuel())
         {
             ++service_progress;
         }
+
+        return true;
+    }
+
+    void refill_aircraft_if_needed(int& fuel_stock)
+    {
+        if (current_aircraft == nullptr || !is_servicing() || !current_aircraft->is_low_on_fuel())
+            return;
+        current_aircraft->refill(fuel_stock);
     }
 };

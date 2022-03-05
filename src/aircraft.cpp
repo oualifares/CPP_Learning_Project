@@ -46,6 +46,7 @@ unsigned int Aircraft::get_speed_octant() const
 // when we arrive at a terminal, signal the tower
 void Aircraft::arrive_at_terminal()
 {
+    assert(!is_at_terminal); // on ne monopolise pas le terminal
     // we arrived at a terminal, so start servicing
     control.arrived_at_terminal(*this);
     is_at_terminal = true;
@@ -54,6 +55,7 @@ void Aircraft::arrive_at_terminal()
 // deploy and retract landing gear depending on next waypoints
 void Aircraft::operate_landing_gear()
 {
+
     if (waypoints.size() > 1u)
     {
         const auto it            = waypoints.begin();
@@ -76,23 +78,26 @@ void Aircraft::operate_landing_gear()
     }
 }
 
-void Aircraft::add_waypoint(const Waypoint& wp, const bool front)
-{
-    if (front)
-    {
-        waypoints.push_front(wp);
-    }
-    else
-    {
-        waypoints.push_back(wp);
-    }
-}
-
-void Aircraft::move()
+bool Aircraft::update()
 {
     if (waypoints.empty())
     {
-        waypoints = control.get_instructions(*this);
+        if (is_service_done)
+        {
+            return false;
+        }
+
+        for (const auto& wp : control.get_instructions(*this))
+        {
+            const bool front = false;
+            add_waypoint<front>(wp);
+        }
+    }
+    if (fuel == 0)
+    {
+        if (this->has_terminal())
+            this->releaseTerminal();
+        throw AircraftCrash { flight_number + " out of fuel" };
     }
 
     if (!is_at_terminal)
@@ -119,26 +124,55 @@ void Aircraft::move()
         {
             if (!landing_gear_deployed)
             {
+                if (this->has_terminal())
+                    this->releaseTerminal();
                 using namespace std::string_literals;
-                throw AircraftCrash { flight_number + " crashed into the ground"s };
+                throw AircraftCrash { flight_number + " bad landing" };
             }
         }
         else
         {
             // if we are in the air, but too slow, then we will sink!
             const float speed_len = speed.length();
+            fuel                  = fuel - 1;
+            // fuel = fuel - 10 ;
             if (speed_len < SPEED_THRESHOLD)
             {
                 pos.z() -= SINK_FACTOR * (SPEED_THRESHOLD - speed_len);
+            }
+
+            if (is_circling())
+            {
+                WaypointQueue way = control.reserve_terminal(*this);
+                if (!way.empty())
+                {
+                    waypoints = std::move(way);
+                }
             }
         }
 
         // update the z-value of the displayable structure
         GL::Displayable::z = pos.x() + pos.y();
     }
+
+    return true;
 }
 
+bool Aircraft::has_terminal() const
+{
+    return !waypoints.empty() && waypoints.back().is_at_terminal();
+}
+
+bool Aircraft::is_circling() const
+{
+    return !is_service_done && !is_on_ground() && !has_terminal();
+}
 void Aircraft::display() const
 {
     type.texture.draw(project_2D(pos), { PLANE_TEXTURE_DIM, PLANE_TEXTURE_DIM }, get_speed_octant());
+}
+
+bool Aircraft::is_low_on_fuel() const
+{
+    return fuel < FUEL_NEEDED;
 }
