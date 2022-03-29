@@ -34,8 +34,7 @@ unsigned int Aircraft::get_speed_octant() const
         const float angle =
             (norm_speed.y() > 0) ? 2.0f * 3.141592f - std::acos(norm_speed.x()) : std::acos(norm_speed.x());
         // partition into NUM_AIRCRAFT_TILES equal pieces
-        return (static_cast<int>(std::round((angle * NUM_AIRCRAFT_TILES) / (2.0f * 3.141592f))) + 1) %
-               NUM_AIRCRAFT_TILES;
+        return (static_cast<int>(std::round((angle * NUM_AIRCRAFT_TILES) / (2.0f * 3.141592f))) + 1) % NUM_AIRCRAFT_TILES;
     }
     else
     {
@@ -45,8 +44,8 @@ unsigned int Aircraft::get_speed_octant() const
 
 // when we arrive at a terminal, signal the tower
 void Aircraft::arrive_at_terminal()
-{
-    assert(!is_at_terminal); // on ne monopolise pas le terminal
+{  
+     assert(!is_at_terminal); //on ne monopolise pas le terminal
     // we arrived at a terminal, so start servicing
     control.arrived_at_terminal(*this);
     is_at_terminal = true;
@@ -78,6 +77,7 @@ void Aircraft::operate_landing_gear()
     }
 }
 
+
 bool Aircraft::update()
 {
     if (waypoints.empty())
@@ -86,12 +86,13 @@ bool Aircraft::update()
         {
             return false;
         }
-
-        for (const auto& wp : control.get_instructions(*this))
+   
+        for (const auto& wp: control.get_instructions(*this))
         {
             const bool front = false;
             add_waypoint<front>(wp);
         }
+
     }
     if (fuel == 0)
     {
@@ -134,8 +135,8 @@ bool Aircraft::update()
         {
             // if we are in the air, but too slow, then we will sink!
             const float speed_len = speed.length();
-            fuel                  = fuel - 1;
-            // fuel = fuel - 10 ;
+            fuel = fuel - 1; 
+            //fuel = fuel - 10 ;
             if (speed_len < SPEED_THRESHOLD)
             {
                 pos.z() -= SINK_FACTOR * (SPEED_THRESHOLD - speed_len);

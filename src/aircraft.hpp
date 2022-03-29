@@ -44,7 +44,7 @@ private:
     void arrive_at_terminal();
     // deploy and retract landing gear depending on next waypoints
     void operate_landing_gear();
-
+  
     bool is_on_ground() const { return pos.z() < DISTANCE_THRESHOLD; }
     float max_speed() const { return is_on_ground() ? type.max_ground_speed : type.max_air_speed; }
 
@@ -77,7 +77,8 @@ public:
     void releaseTerminal() { control.releaseTermianlIfReserved(this); }
     bool is_low_on_fuel() const;
 
-    template <bool front> void add_waypoint(const Waypoint& wp)
+    template<bool front>
+    void add_waypoint(const Waypoint& wp)
     {
         if constexpr (front)
         {
@@ -95,7 +96,7 @@ public:
         if (reserve > fuel_stock)
         {
             fuel += fuel_stock;
-            reserve    = fuel_stock;
+            reserve = fuel_stock;
             fuel_stock = 0;
         }
         else
@@ -103,10 +104,12 @@ public:
             fuel += reserve;
             fuel_stock -= reserve;
         }
-        std::cout << flight_number << " replenishment with :" << reserve << " fuels" << std::endl;
+        std::cout << flight_number <<" replenishment with :" << reserve << " fuels" << std::endl;
         return fuel == MAX_FUEL;
     }
 
-    friend class Tower;
-    friend class AircraftManager;
+
+friend class Tower;
+friend class AircraftManager;
+
 };

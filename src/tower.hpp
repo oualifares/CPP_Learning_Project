@@ -2,6 +2,7 @@
 
 #include "waypoint.hpp"
 
+
 #include <map>
 #include <utility>
 #include <vector>
@@ -27,9 +28,10 @@ private:
 public:
     Tower(Airport& airport_) : airport { airport_ } {}
     void releaseTermianlIfReserved(Aircraft* aircraft);
-
+ 
     // produce instructions for aircraft
     WaypointQueue get_instructions(Aircraft& aircraft);
     void arrived_at_terminal(const Aircraft& aircraft);
     WaypointQueue reserve_terminal(Aircraft& aircraft);
+    
 };
