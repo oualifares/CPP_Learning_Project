@@ -29,6 +29,7 @@ public:
         std::cout << "now servicing " << aircraft.get_flight_num() << "...\n";
         service_progress = 0;
     }
+    void releaseTerminal() { current_aircraft = nullptr; }
 
     void finish_service()
     {
@@ -39,11 +40,12 @@ public:
         }
     }
 
-    void move() override
+    bool move() override
     {
         if (in_use() && is_servicing())
         {
             ++service_progress;
         }
+        return true;
     }
 };

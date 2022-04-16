@@ -13,9 +13,6 @@ add_executable(tower
 	src/img/image.hpp
 	src/img/media_path.hpp
 	src/img/stb_image.h
-    src/aircraft_factory.hpp
-	src/aircraft_manager.cpp
-    src/aircraft_manager.hpp
     src/aircraft_types.hpp
     src/aircraft.cpp
     src/aircraft.hpp
@@ -42,7 +39,7 @@ target_compile_features(tower PRIVATE cxx_std_17)
 if(MSVC)
   target_compile_options(tower PRIVATE /W4 /WX)
 else()
-  target_compile_options(tower PRIVATE -Wall -Wextra -Werror -Wshadow)
+  target_compile_options(tower PRIVATE -Wall -Wextra -Werror -Wshadow -Wno-deprecated)
 endif()
 
 
@@ -72,6 +69,12 @@ set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 target_include_directories(tower SYSTEM PRIVATE ${OPENGL_INCLUDE_DIR})
 target_link_libraries(tower	PRIVATE ${OPENGL_LIBRARIES})
+
+
+## FileSystem
+if((${CMAKE_CXX_COMPILER_ID} MATCHES "GNU") AND (${CMAKE_CXX_COMPILER_VERSION} LESS 9))
+	target_link_libraries(tower	PRIVATE stdc++fs)
+endif()
 
 
 ##########
