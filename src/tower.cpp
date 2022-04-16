@@ -45,10 +45,10 @@ WaypointQueue Tower::get_instructions(Aircraft& aircraft)
         assert(it != reserved_terminals.end());
         const auto terminal_num = it->second;
         Terminal& terminal      = airport.get_terminal(terminal_num);
-        if (!terminal.is_servicing())
+        if (!terminal.is_servicing()) // quitter le terminal
         {
             aircraft.is_service_done = true;
-            terminal.finish_service();
+            terminal.finish_service(); // il etait garé
             reserved_terminals.erase(it);
             aircraft.is_at_terminal = false;
             return airport.start_path(terminal_num);

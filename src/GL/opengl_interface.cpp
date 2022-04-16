@@ -89,8 +89,8 @@ void timer(const int step)
             }
             else
             {
-                it = move_queue.erase(it);
-                delete dynamic_obj;
+                it = move_queue.erase(it); // suprime
+                delete dynamic_obj;        // free en C
             }
         }
     }
