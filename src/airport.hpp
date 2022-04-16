@@ -21,7 +21,7 @@ private:
     const GL::Texture2D texture;
     std::vector<Terminal> terminals;
     Tower tower;
-    // AircraftManager& manager;
+    //AircraftManager& manager;
 
     // reserve a terminal
     // if a terminal is free, return
@@ -60,7 +60,6 @@ public:
         texture { image },
         terminals { type.create_terminals() },
         tower { *this }
-
     {}
 
     Tower& get_tower() { return tower; }
@@ -75,6 +74,5 @@ public:
         }
         return true;
     }
-
     friend class Tower;
 };

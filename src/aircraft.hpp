@@ -1,9 +1,12 @@
 #pragma once
 
 #include "GL/displayable.hpp"
+#include "GL/texture.hpp"
 #include "aircraft_types.hpp"
 #include "config.hpp"
 #include "geometry.hpp"
+#include "img/image.hpp"
+#include "img/media_path.hpp"
 #include "tower.hpp"
 #include "waypoint.hpp"
 
@@ -21,6 +24,7 @@ private:
     bool landing_gear_deployed = false; // is the landing gear deployed?
     bool is_at_terminal        = false;
     bool is_service_done       = false;
+    unsigned int fuel;
 
     // turn the aircraft to arrive at the next waypoint
     // try to facilitate reaching the waypoint after the next by facing the
@@ -56,13 +60,19 @@ public:
         control { control_ }
     {
         speed.cap_length(max_speed());
+        fuel = (rand() % (MAX_FUEL + 1 - MIN_FUEL)) + 150;
+        // fuel = 50;
     }
-
+    int get_fuel() const { return fuel; }
     const std::string& get_flight_num() const { return flight_number; }
     float distance_to(const Point3D& p) const { return pos.distance_to(p); }
 
     void display() const override;
     bool move() override;
+    bool has_terminal() const;
+    bool is_circling() const;
+    void releaseTerminal();
+    // void crash_animation(Point2D pos, const MediaPath& sprite);
 
     friend class Tower;
     friend class AircraftManager;
