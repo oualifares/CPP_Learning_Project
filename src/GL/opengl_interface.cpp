@@ -29,7 +29,7 @@ void toggle_fullscreen()
     }
     else
     {
-        glutFullScreen();
+        glutFullScreen(); 
     }
 
     handle_error("Toggle fullscreen");
@@ -73,23 +73,28 @@ void display(void)
 
 void timer(const int step)
 {
-    if (!is_pause)
+    // TASK_0 C-2: pause.
+    if (!is_paused)
     {
-
+        // TASK_0 C-4: remove aircrafts
+        // We need to replace the foreach with a for with iterator,
+        // because we are going to modify the container while iterating
+        // through it.
         for (auto it = move_queue.begin(); it != move_queue.end();)
         {
             auto* dynamic_obj = *it;
-            if (dynamic_obj->move())
+            if (dynamic_obj->update())
             {
                 ++it;
             }
             else
             {
-                it = move_queue.erase(it); // suprime
-                delete dynamic_obj;        // free en C
+                it = move_queue.erase(it);
+                delete dynamic_obj;
             }
         }
     }
+
     glutPostRedisplay();
     glutTimerFunc(1000u / ticks_per_sec, timer, step + 1);
 }
@@ -124,27 +129,6 @@ void loop()
 void exit_loop()
 {
     glutLeaveMainLoop();
-}
-
-void increaseTick()
-{
-    ticks_per_sec++;
-}
-void decreaseTick()
-{
-    if (ticks_per_sec == 1)
-    {
-        ticks_per_sec = 1;
-    }
-    else
-    {
-        ticks_per_sec--;
-    }
-}
-
-void pause()
-{
-    is_pause = !is_pause;
 }
 
 } // namespace GL

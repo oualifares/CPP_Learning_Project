@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../config.hpp"
 #include "../geometry.hpp"
 #include "displayable.hpp"
@@ -14,13 +15,15 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
 namespace GL {
 
 inline unsigned int ticks_per_sec = DEFAULT_TICKS_PER_SEC;
-inline float zoom                 = DEFAULT_ZOOM;
-inline bool fullscreen            = false;
 
-inline bool is_pause = false;
+inline bool is_paused = false;
+
+inline float zoom      = DEFAULT_ZOOM;
+inline bool fullscreen = false;
 
 using KeyStroke = std::function<void(void)>;
 
@@ -33,7 +36,5 @@ void change_zoom(const float factor);
 void init_gl(int argc, char** argv, const char* title);
 void loop();
 void exit_loop();
-void increaseTick();
-void decreaseTick();
-void pause();
+
 } // namespace GL

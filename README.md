@@ -15,7 +15,7 @@ Make sure your gcc version is 9 or above.
 If it's not, and your package manager doesn't propose it, then you may need to upgrade your system first.
 
 Then install freeglut using your favorite package manager.
-
+ 
 #### Mac
 
 Install freeglut using a package manager like `brew`.

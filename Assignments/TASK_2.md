@@ -138,3 +138,7 @@ La consommation définie dans `AircraftType` ne s'appliquera que lorsque l'avion
 3. Un avion indique qu'il a besoin d'essence lorsqu'il a moins de `200` unités.
 Remplacez cette valeur pour qu'elle corresponde à la quantité consommée en 10s à vitesse maximale.\
 Si vous n'avez pas fait la question bonus de TASK_0, notez bien que la fonction `update` de chaque avion devrait être appelée `DEFAULT_TICKS_PER_SEC` fois par seconde. 
+
+```c++
+Il n y avait pas eu des questions pour cette partie, j’ai plus travaillé sur l’implimentation de certaines méthodes dont la plupart étaient pour gérer l’essence pour la Task 2
+```

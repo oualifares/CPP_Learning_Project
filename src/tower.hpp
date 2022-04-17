@@ -12,7 +12,6 @@ class Aircraft;
 class Tower
 {
 private:
-    // TASK_0 C-6
     // We can use a map or an unordered map, in order to retrieve the terminal index from the Aircraft in
     // O(1).
     using AircraftToTerminal = std::map<const Aircraft*, size_t>;
@@ -26,11 +25,10 @@ private:
 
 public:
     Tower(Airport& airport_) : airport { airport_ } {}
+    void releaseTermianlIfReserved(Aircraft* aircraft);
 
     // produce instructions for aircraft
     WaypointQueue get_instructions(Aircraft& aircraft);
     void arrived_at_terminal(const Aircraft& aircraft);
     WaypointQueue reserve_terminal(Aircraft& aircraft);
-    WaypointQueue instruction_aux(Aircraft& aircraft);
-    void ifReservedReleaseTerminal(Aircraft* aircraft);
 };
